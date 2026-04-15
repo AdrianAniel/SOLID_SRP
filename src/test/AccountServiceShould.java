@@ -39,10 +39,14 @@ public class AccountServiceShould {
     private Console console;
 
     private AccountService accountService;
+    private StatementPrinter statementPrinter;
+    private StatementFormatter statementFormatter;
 
     @Before
     public void setUp() {
-        accountService = new AccountService(transactionRepository, clock, console);
+        accountService = new AccountService(transactionRepository, clock);
+        statementFormatter = new StatementFormatter();
+        statementPrinter = new StatementPrinter(transactionRepository, statementFormatter, console);
         given(clock.today()).willReturn(TODAY);
     }
 
@@ -68,7 +72,7 @@ public class AccountServiceShould {
     public void print_statement() {
         given(transactionRepository.all()).willReturn(TRANSACTIONS);
 
-        accountService.printStatement();
+        statementPrinter.print();
 
         InOrder inOrder = inOrder(console);
         inOrder.verify(console).printLine("DATE | AMOUNT | BALANCE");
